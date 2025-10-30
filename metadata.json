@@ -1,0 +1,5 @@
+{
+  "name": "Dashboard de Reclamos R28",
+  "description": "Un dashboard moderno para monitorear y visualizar reclamos de clientes en tiempo real desde Google Sheets, con un diseño inspirado en Notion.",
+  "requestFramePermissions": []
+}
