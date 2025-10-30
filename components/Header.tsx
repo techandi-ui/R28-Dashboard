@@ -1,27 +1,45 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Icon } from './ui/Icon';
 
 export const Header: React.FC = () => {
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    
+    const handleRefresh = () => {
+        setIsRefreshing(true);
+        window.location.reload();
+    };
+
     return (
-        <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-gray-200 z-10">
+        <header className="sticky top-0 bg-white/90 backdrop-blur-xl border-b border-slate-200/60 z-50 shadow-sm">
             <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center gap-3">
-                        <div className="bg-gray-100 p-2 rounded-lg">
-                           <Icon name="table" className="text-gray-600" />
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-2.5 rounded-xl border border-blue-100/50 shadow-sm">
+                           <Icon name="table" className="text-blue-600 w-5 h-5" />
                         </div>
-                        <h1 className="text-xl font-semibold text-gray-800">
-                            Dashboard de Reclamos <span className="text-gray-400 font-medium">R28</span>
-                        </h1>
+                        <div>
+                            <h1 className="text-lg font-semibold text-slate-900 tracking-tight">
+                                Dashboard de Reclamos
+                            </h1>
+                            <p className="text-xs text-slate-500 font-medium">R28</p>
+                        </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2">
                         <button 
-                          className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors"
-                          onClick={() => window.location.reload()}
+                          className={`
+                            p-2.5 rounded-xl text-slate-600 
+                            hover:bg-slate-100 hover:text-slate-900 
+                            active:scale-95
+                            transition-all duration-200
+                            border border-transparent hover:border-slate-200
+                            ${isRefreshing ? 'animate-spin' : ''}
+                          `}
+                          onClick={handleRefresh}
                           title="Actualizar datos"
+                          disabled={isRefreshing}
                         >
-                            <Icon name="clock-counter-clockwise" />
+                            <Icon name="clock-counter-clockwise" className="w-5 h-5" />
                         </button>
                     </div>
                 </div>

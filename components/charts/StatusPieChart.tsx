@@ -5,7 +5,6 @@ import { CHART_COLORS } from '../../constants';
 interface ChartData {
     name: string;
     value: number;
-    // FIX: Add index signature to fix recharts TypeScript error.
     [key: string]: any;
 }
 
@@ -21,19 +20,19 @@ const renderActiveShape = (props: any) => {
         <text x={cx} y={cy - 5} dy={8} textAnchor="middle" fill={fill} className="text-base font-semibold">
           {payload.name}
         </text>
-        <text x={cx} y={cy + 15} dy={8} textAnchor="middle" fill="#374151" className="text-sm">
+        <text x={cx} y={cy + 15} dy={8} textAnchor="middle" fill="#475569" className="text-sm font-medium">
           {`${value} (${(percent * 100).toFixed(0)}%)`}
         </text>
         <Sector
           cx={cx}
           cy={cy}
           innerRadius={innerRadius}
-          outerRadius={outerRadius + 6}
+          outerRadius={outerRadius + 8}
           startAngle={startAngle}
           endAngle={endAngle}
           fill={fill}
           stroke="#fff"
-          strokeWidth={2}
+          strokeWidth={3}
         />
       </g>
     );
@@ -43,16 +42,13 @@ export const StatusPieChart: React.FC<StatusPieChartProps> = ({ data }) => {
     const [activeIndex, setActiveIndex] = useState(0);
 
     if (data.every(d => d.value === 0)) {
-        return <div className="flex items-center justify-center h-full text-gray-500">No hay datos para mostrar.</div>;
+        return <div className="flex items-center justify-center h-full text-slate-400">No hay datos para mostrar.</div>;
     }
 
     const onPieEnter = (_: any, index: number) => {
         setActiveIndex(index);
     };
 
-    // FIX: The version of `@types/recharts` seems to have incorrect typings for the `Pie` component,
-    // specifically missing props like `activeIndex` which are valid in the library.
-    // Casting to `any` to suppress the incorrect type error and allow the interactive chart feature to work.
     const PatchedPie = Pie as any;
 
     return (
@@ -67,19 +63,28 @@ export const StatusPieChart: React.FC<StatusPieChartProps> = ({ data }) => {
                         cy="45%"
                         innerRadius={65}
                         outerRadius={85}
-                        paddingAngle={5}
+                        paddingAngle={4}
                         dataKey="value"
                         nameKey="name"
                         onMouseEnter={onPieEnter}
+                        animationDuration={800}
+                        animationEasing="ease-out"
                     >
                         {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={CHART_COLORS.pie[index % CHART_COLORS.pie.length]} />
+                            <Cell 
+                                key={`cell-${index}`} 
+                                fill={CHART_COLORS.pie[index % CHART_COLORS.pie.length]}
+                            />
                         ))}
                     </PatchedPie>
                     <Legend 
                       iconType="circle" 
-                      iconSize={10} 
-                      wrapperStyle={{ fontSize: '13px', paddingTop: '15px' }} 
+                      iconSize={8} 
+                      wrapperStyle={{ 
+                          fontSize: '13px', 
+                          paddingTop: '15px',
+                          color: '#64748b'
+                      }} 
                       verticalAlign="bottom"
                     />
                 </PieChart>

@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 
-// A simple count-up hook
-const useCountUp = (end: number, duration: number = 800) => {
+// Hook mejorado de count-up con easing suave
+const useCountUp = (end: number, duration: number = 1000) => {
     const [count, setCount] = useState(0);
     
     useEffect(() => {
         let start = 0;
         const startTimestamp = Date.now();
         
+        // Función de easing para animación más suave (ease-out-cubic)
+        const easeOutCubic = (t: number): number => {
+            return 1 - Math.pow(1 - t, 3);
+        };
+        
         const step = () => {
             const now = Date.now();
             const progress = Math.min((now - startTimestamp) / duration, 1);
-            const currentCount = Math.floor(progress * (end - start) + start);
+            const easedProgress = easeOutCubic(progress);
+            const currentCount = Math.floor(easedProgress * (end - start) + start);
             setCount(currentCount);
 
             if (progress < 1) {
                 requestAnimationFrame(step);
             } else {
-                setCount(end); // Ensure it ends on the exact number
+                setCount(end);
             }
         };
         
@@ -36,30 +42,90 @@ interface KPICardProps {
     theme?: 'yellow' | 'blue' | 'green' | 'default';
 }
 
+// Temas premium con gradientes sutiles y colores refinados
 const themeClasses = {
-    yellow: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-900', icon: 'text-amber-600' },
-    blue: { bg: 'bg-blue-100', border: 'border-blue-200', text: 'text-blue-900', icon: 'text-blue-600' },
-    green: { bg: 'bg-green-100', border: 'border-green-200', text: 'text-green-900', icon: 'text-green-600' },
-    default: { bg: 'bg-white', border: 'border-gray-200', text: 'text-gray-900', icon: 'text-gray-600' },
+    yellow: { 
+        bg: 'bg-gradient-to-br from-amber-50 to-orange-50/50', 
+        border: 'border-amber-200/60', 
+        text: 'text-amber-950', 
+        icon: 'text-amber-600',
+        iconBg: 'bg-amber-100/70',
+        valueText: 'text-slate-900'
+    },
+    blue: { 
+        bg: 'bg-gradient-to-br from-blue-50 to-indigo-50/50', 
+        border: 'border-blue-200/60', 
+        text: 'text-blue-950', 
+        icon: 'text-blue-600',
+        iconBg: 'bg-blue-100/70',
+        valueText: 'text-slate-900'
+    },
+    green: { 
+        bg: 'bg-gradient-to-br from-emerald-50 to-teal-50/50', 
+        border: 'border-emerald-200/60', 
+        text: 'text-emerald-950', 
+        icon: 'text-emerald-600',
+        iconBg: 'bg-emerald-100/70',
+        valueText: 'text-slate-900'
+    },
+    default: { 
+        bg: 'bg-white', 
+        border: 'border-slate-200/60', 
+        text: 'text-slate-700', 
+        icon: 'text-slate-600',
+        iconBg: 'bg-slate-100/70',
+        valueText: 'text-slate-900'
+    },
 };
 
 export const KPICard: React.FC<KPICardProps> = ({ title, value, icon, percentage, theme = 'default' }) => {
-    const animatedValue = useCountUp(value);
+    const animatedValue = useCountUp(value, 1200);
     const currentTheme = themeClasses[theme];
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <div className={`p-6 rounded-lg border shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-150 ease-in-out transform hover:-translate-y-1 ${currentTheme.bg} ${currentTheme.border}`}>
-            <div className="flex justify-between items-start">
-                <h3 className={`text-sm font-medium ${currentTheme.text}`}>{title}</h3>
-                <Icon name={icon} className={`w-6 h-6 ${currentTheme.icon}`} />
-            </div>
-            <div className="mt-2">
-                <p className="text-3xl font-semibold text-gray-800">{animatedValue.toLocaleString('es-AR')}</p>
-                {percentage !== undefined && (
-                    <p className="text-sm text-gray-500 mt-1">
-                        {percentage.toFixed(1)}% del total
+        <div 
+            className={`
+                group relative p-6 rounded-xl border backdrop-blur-sm
+                transition-all duration-300 ease-out
+                hover:shadow-lg hover:shadow-slate-200/50 hover:-translate-y-1
+                ${currentTheme.bg} ${currentTheme.border}
+                animate-[fadeInUp_0.5s_ease-out_forwards]
+                opacity-0
+            `}
+            style={{ 
+                animationDelay: '0ms',
+                boxShadow: 'var(--shadow-sm)'
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {/* Efecto de brillo sutil en hover */}
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            
+            <div className="relative">
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className={`text-sm font-medium tracking-tight ${currentTheme.text}`}>
+                        {title}
+                    </h3>
+                    <div className={`
+                        p-2 rounded-lg transition-all duration-300 
+                        ${currentTheme.iconBg}
+                        ${isHovered ? 'scale-110 rotate-6' : 'scale-100 rotate-0'}
+                    `}>
+                        <Icon name={icon} className={`w-5 h-5 ${currentTheme.icon}`} />
+                    </div>
+                </div>
+                <div className="space-y-1">
+                    <p className={`text-4xl font-semibold tracking-tight ${currentTheme.valueText}`}>
+                        {animatedValue.toLocaleString('es-AR')}
                     </p>
-                )}
+                    {percentage !== undefined && (
+                        <p className="text-sm text-slate-500 font-medium">
+                            {percentage.toFixed(1)}% del total
+                        </p>
+                    )}
+                </div>
             </div>
         </div>
     );

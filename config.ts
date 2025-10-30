@@ -1,22 +1,27 @@
-// ATENCIÓN: Reemplace los valores de abajo con sus credenciales reales de Google Sheets.
-// Este es un paso necesario para que el dashboard pueda obtener los datos.
+/**
+ * Configuración de Google Sheets
+ * Las credenciales se leen desde las variables de entorno (.env)
+ * 
+ * IMPORTANTE: Crea un archivo .env en la raíz del proyecto con:
+ * VITE_GOOGLE_SHEETS_API_KEY=tu-api-key-aqui
+ * VITE_GOOGLE_SHEET_ID=tu-sheet-id-aqui
+ * VITE_GOOGLE_SHEET_RANGE=REGISTRO DE RECLAMOS R28!A2:O
+ */
 
 /**
  * Tu clave de API de Google Sheets.
- * @example 'AIzaSy..._8k'
+ * Se obtiene desde: https://console.cloud.google.com/apis/credentials
  */
-export const GOOGLE_SHEETS_API_KEY = 'TU_CLAVE_API_AQUI';
+export const GOOGLE_SHEETS_API_KEY = import.meta.env.VITE_GOOGLE_SHEETS_API_KEY || '';
 
 /**
  * El ID de tu planilla de cálculo de Google Sheets.
- * Lo puedes encontrar en la URL de tu planilla: https://docs.google.com/spreadsheets/d/ID_DE_LA_PLANILLA/edit
- * @example '1aBcD-eFgHiJkLmNoPqRsTuVwXyZ'
+ * Lo encuentras en la URL: https://docs.google.com/spreadsheets/d/ID_DE_LA_PLANILLA/edit
  */
-export const GOOGLE_SHEET_ID = 'TU_ID_DE_PLANILLA_AQUI';
+export const GOOGLE_SHEET_ID = import.meta.env.VITE_GOOGLE_SHEET_ID || '';
 
 /**
  * El rango de celdas que quieres leer. Debe incluir el nombre de la hoja.
- * @example 'Hoja1!A2:O'
- * @example 'REGISTRO DE RECLAMOS R28!A2:O'
+ * @example 'Hoja1!A2:O' o 'REGISTRO DE RECLAMOS R28!A2:O'
  */
-export const GOOGLE_SHEET_RANGE = 'REGISTRO DE RECLAMOS R28!A2:O';
+export const GOOGLE_SHEET_RANGE = import.meta.env.VITE_GOOGLE_SHEET_RANGE || 'REGISTRO DE RECLAMOS R28!A2:O';

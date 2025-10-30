@@ -7,34 +7,48 @@ export const STATUS_OPTIONS = [
     { value: Status.Finalizado, label: 'Finalizado' },
 ];
 
+// Paleta de colores premium estilo shadcn/moderne
 export const STATUS_COLORS: { [key in Status]: { bg: string; text: string; border: string } } = {
     [Status.EnCola]: {
-        bg: 'bg-amber-100',
-        text: 'text-amber-900',
-        border: 'border-amber-300'
+        bg: 'bg-amber-50',
+        text: 'text-amber-950',
+        border: 'border-amber-200'
     },
     [Status.EnProceso]: {
-        bg: 'bg-blue-200',
-        text: 'text-blue-900',
-        border: 'border-blue-400'
+        bg: 'bg-blue-50',
+        text: 'text-blue-950',
+        border: 'border-blue-200'
     },
     [Status.Finalizado]: {
-        bg: 'bg-green-200',
-        text: 'text-green-900',
-        border: 'border-green-400'
+        bg: 'bg-emerald-50',
+        text: 'text-emerald-950',
+        border: 'border-emerald-200'
     },
 };
 
 export const URGENT_COLORS = {
-    bg: 'bg-red-200',
-    text: 'text-red-900',
-    border: 'border-red-400'
+    bg: 'bg-rose-50',
+    text: 'text-rose-950',
+    border: 'border-rose-200'
 };
 
+// Colores más sofisticados y menos saturados para gráficos
 export const CHART_COLORS = {
-    blue: ['#60A5FA', '#3B82F6'],
-    green: ['#4ADE80', '#22C55E'],
-    indigo: ['#818CF8', '#6366F1'],
-    pie: ['#FBBF24', '#60A5FA', '#4ADE80'], // Amber, Blue, Green for Pie Chart
-    axis: '#4B5563', // Tailwind's gray-600 for better text legibility
+    blue: ['#60a5fa', '#3b82f6', '#2563eb'],
+    green: ['#34d399', '#10b981', '#059669'],
+    indigo: ['#818cf8', '#6366f1', '#4f46e5'],
+    purple: ['#a78bfa', '#8b5cf6', '#7c3aed'],
+    // Paleta para gráfico de pie - colores más sutiles y elegantes
+    pie: ['#f59e0b', '#3b82f6', '#10b981'], 
+    // Colores para gráficos de barras - gradientes suaves
+    bar: ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'],
+    // Color para ejes y texto de gráficos
+    axis: '#64748b', // slate-500
+    grid: '#e2e8f0', // slate-200
+    // Fondo de tooltips
+    tooltip: {
+        bg: 'rgba(15, 23, 42, 0.95)', // slate-900 con opacidad
+        text: '#f1f5f9', // slate-100
+        border: '#475569' // slate-600
+    }
 };

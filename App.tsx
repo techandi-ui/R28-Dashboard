@@ -11,6 +11,7 @@ import { ClaimsTimelineChart } from './components/charts/ClaimsTimelineChart';
 import { useClaimsData } from './hooks/useClaimsData';
 import { Claim, Status } from './types';
 import { SkeletonLoader } from './components/ui/SkeletonLoader';
+import { Icon } from './components/ui/Icon';
 
 const App: React.FC = () => {
     const { 
@@ -71,9 +72,9 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAFAFA] text-[#1F2937]">
+        <div className="min-h-screen bg-slate-50 text-slate-900">
             <Header />
-            <main className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto">
+            <main className="p-6 sm:p-8 lg:p-10 max-w-[1600px] mx-auto">
                 <Filters 
                     filters={filters} 
                     setFilters={setFilters}
@@ -82,26 +83,39 @@ const App: React.FC = () => {
                 />
                 
                 {loading && (
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {[...Array(4)].map((_, i) => <SkeletonLoader key={i} className="h-32 rounded-lg" />)}
+                            {[...Array(4)].map((_, i) => <SkeletonLoader key={i} className="h-36" />)}
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <SkeletonLoader className="h-72 rounded-lg" />
-                            <SkeletonLoader className="h-72 rounded-lg" />
-                            <SkeletonLoader className="h-72 rounded-lg" />
+                            <SkeletonLoader className="h-80" />
+                            <SkeletonLoader className="h-80 lg:col-span-2" />
                         </div>
-                        <SkeletonLoader className="h-96 rounded-lg" />
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <SkeletonLoader className="h-80" />
+                            <SkeletonLoader className="h-80" />
+                        </div>
+                        <SkeletonLoader className="h-96" />
                     </div>
                 )}
                 
-                {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-                    <strong className="font-bold">Error:</strong>
-                    <span className="block sm:inline ml-2">{error}</span>
-                </div>}
+                {error && (
+                    <div className="bg-rose-50 border border-rose-200 text-rose-900 px-6 py-4 rounded-xl shadow-sm" role="alert">
+                        <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0">
+                                <Icon name="warning-circle" className="w-5 h-5 text-rose-600" />
+                            </div>
+                            <div>
+                                <strong className="font-semibold">Error al cargar datos</strong>
+                                <p className="mt-1 text-sm text-rose-800">{error}</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {!loading && !error && (
-                    <div className="space-y-6">
+                    <div className="space-y-8">
+                        {/* KPI Cards con stagger animation */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <KPICard title="Total de Reclamos" value={kpiData.total} icon="ph-list-checks" />
                             <KPICard title="En Cola" value={kpiData.enCola.count} percentage={kpiData.enCola.percentage} icon="ph-clock-clockwise" theme="yellow" />
@@ -109,30 +123,31 @@ const App: React.FC = () => {
                             <KPICard title="Finalizado" value={kpiData.finalizado.count} percentage={kpiData.finalizado.percentage} icon="ph-check-circle" theme="green" />
                         </div>
                         
+                        {/* Charts Grid */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="lg:col-span-1 bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow duration-150">
-                                <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Distribución por Estado</h3>
+                            <div className="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                                <h3 className="text-base font-semibold text-slate-900 mb-5 tracking-tight">Distribución por Estado</h3>
                                 <StatusPieChart data={chartStatusData} />
                             </div>
-                            <div className="lg:col-span-2 bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow duration-150">
-                               <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Evolución de Reclamos</h3>
+                            <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                               <h3 className="text-base font-semibold text-slate-900 mb-5 tracking-tight">Evolución de Reclamos</h3>
                                 <ClaimsTimelineChart data={filteredClaims} />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow duration-150">
-                                <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Reclamos por Empresa</h3>
+                            <div className="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                                <h3 className="text-base font-semibold text-slate-900 mb-5 tracking-tight">Reclamos por Empresa</h3>
                                 <ClaimsByCompanyBarChart data={filteredClaims} />
                             </div>
-                             <div className="bg-white p-6 rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow duration-150">
-                                <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Reclamos por Motivo</h3>
+                             <div className="bg-white p-6 rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-300">
+                                <h3 className="text-base font-semibold text-slate-900 mb-5 tracking-tight">Reclamos por Motivo</h3>
                                 <ClaimsByReasonBarChart data={filteredClaims} />
                             </div>
                         </div>
                         
                         <div>
-                           <h2 className="text-xl font-semibold mb-4">Reclamos Pendientes</h2>
+                           <h2 className="text-xl font-semibold text-slate-900 mb-5 tracking-tight">Reclamos Pendientes</h2>
                            <ClaimsTable claims={filteredClaims.filter(c => c.estado !== Status.Finalizado)} onViewDetails={handleViewDetails} />
                         </div>
                     </div>

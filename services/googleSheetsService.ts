@@ -47,28 +47,59 @@ const parseSheetData = (values: string[][]): Claim[] => {
 
 
 export const fetchClaimsData = async (): Promise<Claim[]> => {
-    if (!API_KEY || !SHEET_ID || !RANGE || API_KEY === 'TU_CLAVE_API_AQUI' || SHEET_ID === 'TU_ID_DE_PLANILLA_AQUI') {
-        throw new Error('Por favor, configure sus credenciales de Google Sheets en el archivo `config.ts`.');
+    // Validación de credenciales
+    if (!API_KEY || !SHEET_ID || !RANGE) {
+        throw new Error(
+            '⚠️ Configuración incompleta de Google Sheets.\n\n' +
+            'Por favor, crea un archivo .env en la raíz del proyecto con:\n' +
+            'VITE_GOOGLE_SHEETS_API_KEY=tu-api-key-aqui\n' +
+            'VITE_GOOGLE_SHEET_ID=tu-sheet-id-aqui\n' +
+            'VITE_GOOGLE_SHEET_RANGE=REGISTRO DE RECLAMOS R28!A2:O\n\n' +
+            'Consulta el archivo .env.example para más detalles.'
+        );
     }
 
     try {
-        console.log("Fetching real data from Google Sheets...");
+        console.log("📊 Obteniendo datos desde Google Sheets...");
         const response = await fetch(API_URL);
         
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Error from Google Sheets API:', errorData);
-            throw new Error(`Error al conectar con la API de Google Sheets (${response.status}). Verifique su API Key y Sheet ID.`);
+            let errorMessage = `Error ${response.status} al conectar con Google Sheets.`;
+            
+            try {
+                const errorData = await response.json();
+                console.error('Error detallado de Google Sheets API:', errorData);
+                
+                if (response.status === 400) {
+                    errorMessage = '⚠️ API Key inválida o configuración incorrecta.';
+                } else if (response.status === 403) {
+                    errorMessage = '🔒 Acceso denegado. Verifica que la API Key tenga permisos y que la planilla sea pública o esté compartida.';
+                } else if (response.status === 404) {
+                    errorMessage = '📄 No se encontró la planilla. Verifica el SHEET_ID y el RANGE.';
+                }
+            } catch (e) {
+                // Si no se puede parsear el error, usar el mensaje genérico
+            }
+            
+            throw new Error(errorMessage);
         }
         
         const data = await response.json();
-        return parseSheetData(data.values);
+        
+        if (!data.values || data.values.length === 0) {
+            console.warn('⚠️ La planilla no contiene datos en el rango especificado.');
+            return [];
+        }
+        
+        const claims = parseSheetData(data.values);
+        console.log(`✅ ${claims.length} reclamos cargados exitosamente.`);
+        return claims;
 
     } catch (error) {
-        console.error("Error fetching from Google Sheets:", error);
+        console.error("❌ Error al obtener datos de Google Sheets:", error);
         if (error instanceof Error) {
-           throw new Error(error.message);
+           throw error;
         }
-        throw new Error('Ocurrió un error de red o de configuración. Revise la consola para más detalles.');
+        throw new Error('Error de red o configuración. Revisa la consola para más detalles.');
     }
 };

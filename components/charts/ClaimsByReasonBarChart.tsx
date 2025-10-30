@@ -7,6 +7,21 @@ interface ClaimsByReasonBarChartProps {
     data: Claim[];
 }
 
+// Tooltip personalizado estilo premium
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-slate-900/95 backdrop-blur-sm px-4 py-3 rounded-xl border border-slate-700 shadow-xl">
+                <p className="text-slate-100 font-semibold text-sm mb-1">{label}</p>
+                <p className="text-emerald-400 text-sm font-medium">
+                    {payload[0].value} {payload[0].value === 1 ? 'reclamo' : 'reclamos'}
+                </p>
+            </div>
+        );
+    }
+    return null;
+};
+
 export const ClaimsByReasonBarChart: React.FC<ClaimsByReasonBarChartProps> = ({ data }) => {
     const chartData = useMemo(() => {
         const counts = data.reduce<Record<string, number>>((acc, claim) => {
@@ -21,7 +36,7 @@ export const ClaimsByReasonBarChart: React.FC<ClaimsByReasonBarChartProps> = ({ 
     }, [data]);
 
     if (chartData.length === 0) {
-        return <div className="flex items-center justify-center h-full text-gray-500">No hay datos para mostrar.</div>;
+        return <div className="flex items-center justify-center h-full text-slate-400">No hay datos para mostrar.</div>;
     }
 
     return (
@@ -30,23 +45,29 @@ export const ClaimsByReasonBarChart: React.FC<ClaimsByReasonBarChartProps> = ({ 
                 <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <defs>
                         <linearGradient id="reasonGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={CHART_COLORS.green[0]} stopOpacity={0.8}/>
+                            <stop offset="5%" stopColor={CHART_COLORS.green[0]} stopOpacity={0.9}/>
                             <stop offset="95%" stopColor={CHART_COLORS.green[1]} stopOpacity={1}/>
                         </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: CHART_COLORS.axis }} />
-                    <YAxis tick={{ fontSize: 12, fill: CHART_COLORS.axis }} allowDecimals={false} />
-                    <Tooltip
-                        cursor={{ fill: '#F9FAFB' }}
-                        contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                        }}
+                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
+                    <XAxis 
+                        dataKey="name" 
+                        tick={{ fontSize: 12, fill: CHART_COLORS.axis }}
+                        axisLine={{ stroke: CHART_COLORS.grid }}
                     />
-                    <Bar dataKey="reclamos" fill="url(#reasonGradient)" radius={[4, 4, 0, 0]} />
+                    <YAxis 
+                        tick={{ fontSize: 12, fill: CHART_COLORS.axis }} 
+                        allowDecimals={false}
+                        axisLine={{ stroke: CHART_COLORS.grid }}
+                    />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgb(248 250 252 / 0.5)' }} />
+                    <Bar 
+                        dataKey="reclamos" 
+                        fill="url(#reasonGradient)" 
+                        radius={[6, 6, 0, 0]}
+                        animationDuration={800}
+                        animationEasing="ease-out"
+                    />
                 </BarChart>
             </ResponsiveContainer>
         </div>

@@ -7,6 +7,29 @@ interface ClaimsTimelineChartProps {
     data: Claim[];
 }
 
+// Tooltip personalizado estilo premium
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        const date = new Date(label);
+        const formattedDate = date.toLocaleDateString('es-AR', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        return (
+            <div className="bg-slate-900/95 backdrop-blur-sm px-4 py-3 rounded-xl border border-slate-700 shadow-xl">
+                <p className="text-slate-100 font-semibold text-sm mb-1 capitalize">{formattedDate}</p>
+                <p className="text-indigo-400 text-sm font-medium">
+                    {payload[0].value} {payload[0].value === 1 ? 'reclamo' : 'reclamos'}
+                </p>
+            </div>
+        );
+    }
+    return null;
+};
+
 export const ClaimsTimelineChart: React.FC<ClaimsTimelineChartProps> = ({ data }) => {
     const chartData = useMemo(() => {
         const counts = data.reduce((acc, claim) => {
@@ -21,7 +44,7 @@ export const ClaimsTimelineChart: React.FC<ClaimsTimelineChartProps> = ({ data }
     }, [data]);
     
     if (chartData.length === 0) {
-        return <div className="flex items-center justify-center h-full text-gray-500">No hay datos para mostrar.</div>;
+        return <div className="flex items-center justify-center h-full text-slate-400">No hay datos para mostrar.</div>;
     }
 
     return (
@@ -30,37 +53,48 @@ export const ClaimsTimelineChart: React.FC<ClaimsTimelineChartProps> = ({ data }
                 <LineChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <defs>
                         <linearGradient id="timelineGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={CHART_COLORS.indigo[0]} stopOpacity={0.4}/>
+                            <stop offset="5%" stopColor={CHART_COLORS.indigo[0]} stopOpacity={0.3}/>
                             <stop offset="95%" stopColor={CHART_COLORS.indigo[1]} stopOpacity={0}/>
                         </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} vertical={false} />
                     <XAxis 
                         dataKey="date" 
                         tick={{ fontSize: 12, fill: CHART_COLORS.axis }} 
+                        axisLine={{ stroke: CHART_COLORS.grid }}
                         tickFormatter={(str) => {
                             const date = new Date(str);
                             return date.toLocaleDateString('es-AR', { month: 'short', day: 'numeric' });
                         }}
                     />
-                    <YAxis tick={{ fontSize: 12, fill: CHART_COLORS.axis }} allowDecimals={false} />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#fff',
-                            border: '1px solid #E5E7EB',
-                            borderRadius: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                        }}
-                        labelFormatter={(label) => new Date(label).toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    <YAxis 
+                        tick={{ fontSize: 12, fill: CHART_COLORS.axis }} 
+                        allowDecimals={false}
+                        axisLine={{ stroke: CHART_COLORS.grid }}
                     />
-                    <Area type="monotone" dataKey="reclamos" stroke="none" fill="url(#timelineGradient)" />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area 
+                        type="monotone" 
+                        dataKey="reclamos" 
+                        stroke="none" 
+                        fill="url(#timelineGradient)"
+                        animationDuration={1000}
+                        animationEasing="ease-out"
+                    />
                     <Line 
                         type="monotone" 
                         dataKey="reclamos" 
                         stroke={CHART_COLORS.indigo[1]} 
-                        strokeWidth={2} 
+                        strokeWidth={2.5} 
                         dot={false} 
-                        activeDot={{ r: 6, strokeWidth: 2, fill: '#fff', stroke: CHART_COLORS.indigo[1] }} 
+                        activeDot={{ 
+                            r: 6, 
+                            strokeWidth: 2, 
+                            fill: '#fff', 
+                            stroke: CHART_COLORS.indigo[1] 
+                        }}
+                        animationDuration={1000}
+                        animationEasing="ease-out"
                     />
                 </LineChart>
             </ResponsiveContainer>

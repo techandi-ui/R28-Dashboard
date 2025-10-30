@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FiltersState } from '../types';
 import { STATUS_OPTIONS } from '../constants';
 import { Icon } from './ui/Icon';
@@ -45,13 +45,17 @@ export const Filters: React.FC<FiltersProps> = ({ filters, setFilters, available
         });
     };
 
+    const hasActiveFilters = filters.searchQuery || filters.status || 
+        filters.dateRange.start || filters.dateRange.end ||
+        filters.companies.length > 0 || filters.reasons.length > 0;
+
     return (
-        <div className="mb-6 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="mb-8 p-6 bg-white rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                 {/* Search */}
                 <div className="relative md:col-span-2 lg:col-span-4 xl:col-span-2">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Icon name="magnifying-glass" className="text-gray-400" />
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <Icon name="magnifying-glass" className="text-slate-400 w-4 h-4" />
                     </div>
                     <input
                         type="text"
@@ -59,7 +63,14 @@ export const Filters: React.FC<FiltersProps> = ({ filters, setFilters, available
                         value={filters.searchQuery}
                         onChange={handleInputChange}
                         placeholder="Buscar por Nro, Email, Motivo..."
-                        className="w-full h-10 pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        className="
+                            w-full h-11 pl-10 pr-4 py-2 
+                            border border-slate-200 rounded-lg 
+                            bg-slate-50/50
+                            text-sm text-slate-900 placeholder:text-slate-400
+                            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white
+                            transition-all duration-200
+                        "
                     />
                 </div>
                 
@@ -69,14 +80,28 @@ export const Filters: React.FC<FiltersProps> = ({ filters, setFilters, available
                     name="startDate"
                     value={filters.dateRange.start || ''}
                     onChange={handleInputChange}
-                    className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-500"
+                    className="
+                        w-full h-11 px-3.5 py-2 
+                        border border-slate-200 rounded-lg 
+                        bg-slate-50/50
+                        text-sm text-slate-600
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white
+                        transition-all duration-200
+                    "
                 />
                 <input
                     type="date"
                     name="endDate"
                     value={filters.dateRange.end || ''}
                     onChange={handleInputChange}
-                     className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-500"
+                    className="
+                        w-full h-11 px-3.5 py-2 
+                        border border-slate-200 rounded-lg 
+                        bg-slate-50/50
+                        text-sm text-slate-600
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white
+                        transition-all duration-200
+                    "
                 />
 
                 {/* Status Select */}
@@ -84,16 +109,35 @@ export const Filters: React.FC<FiltersProps> = ({ filters, setFilters, available
                     name="status"
                     value={filters.status}
                     onChange={handleInputChange}
-                    className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="
+                        w-full h-11 px-3.5 py-2 
+                        border border-slate-200 rounded-lg 
+                        bg-slate-50/50
+                        text-sm text-slate-900
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 focus:bg-white
+                        transition-all duration-200
+                        cursor-pointer
+                    "
                 >
                     {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                 </select>
                 
                 <button
                     onClick={clearFilters}
-                    className="h-10 flex items-center justify-center gap-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                    disabled={!hasActiveFilters}
+                    className={`
+                        h-11 flex items-center justify-center gap-2 px-4 py-2 
+                        border rounded-lg
+                        text-sm font-medium
+                        transition-all duration-200
+                        active:scale-95
+                        ${hasActiveFilters 
+                            ? 'border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 hover:shadow-sm' 
+                            : 'border-slate-100 text-slate-400 bg-slate-50/50 cursor-not-allowed opacity-60'
+                        }
+                    `}
                 >
-                    <Icon name="funnel" />
+                    <Icon name="funnel" className="w-4 h-4" />
                     Limpiar Filtros
                 </button>
             </div>
